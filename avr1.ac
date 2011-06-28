@@ -1,0 +1,16 @@
+AC_ARCH(avr1){
+
+ ac_mem   DM:5M;
+ ac_regbank RB:32;
+ ac_reg npc;
+ ac_reg hi, lo;
+//cada instrução tem uma ou duas palavras de 16 bits
+ ac_wordsize 16;
+
+ ARCH_CTOR(avr1) {
+
+    ac_isa(“avr_isa.ac");
+    set_endian("little");
+
+ };
+};
