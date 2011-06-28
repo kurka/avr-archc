@@ -51,8 +51,8 @@ AC_ISA(avr1){
     add.set_decoder(op=6);
 		
 		//add com carry
-    add.set_asm("add %reg, %reg", rr, rd);
-    add.set_decoder(op=6);
+    addc.set_asm("add %reg, %reg", rr, rd);
+    addc.set_decoder(op=6);
 
 }
 
