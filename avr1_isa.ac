@@ -35,3 +35,27 @@ AC_ISA(avr1){
 
 
 	
+
+
+	// default gas assembler uses numbers as register names
+  ac_asm_map reg {
+
+     "$"[0..31] = [0..16];
+  }
+
+	
+ ISA_CTOR(avr1) {
+
+		//add sem carry
+    add.set_asm("add %reg, %reg", rr, rd);
+    add.set_decoder(op=6);
+		
+		//add com carry
+    add.set_asm("add %reg, %reg", rr, rd);
+    add.set_decoder(op=6);
+
+}
+
+
+	
+
