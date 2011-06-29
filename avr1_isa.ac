@@ -35,6 +35,7 @@ AC_ISA(avr1){
 
 
 	
+	ac_instr<Type_RegDir_Rr_Rd> add, adc, sub, sbc, and, or, eor, mul, muls, cpse, cp, cpc, mov, 
 
 
 	// default gas assembler uses numbers as register names
@@ -51,7 +52,7 @@ AC_ISA(avr1){
     add.set_decoder(op=6);
 		
 		//add com carry
-    addc.set_asm("add %reg, %reg", rr, rd);
+    addc.set_asm("adc %reg, %reg", rr, rd);
     addc.set_decoder(op=6);
 
 }
