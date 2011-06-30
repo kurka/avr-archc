@@ -1,4 +1,3 @@
-
 AC_ISA(avr1){
   // sao 13 tipos básicos
 
@@ -36,9 +35,9 @@ AC_ISA(avr1){
   
   
   
-  ac_instr<Type_RegDir_Rr_Rd> add, adc, sub, sbc, logical_and, or, eor, mul, 
-    mov;
-    /* cp, cpc, cpse; */
+  ac_instr<Type_RegDir_Rr_Rd> add, adc, sub, sbc, logical_and, logical_or, eor, mul, 
+    mov,
+    cp, cpc;// cpse;		
     
   // default gas assembler uses numbers as register names
   ac_asm_map reg {
@@ -60,13 +59,13 @@ AC_ISA(avr1){
     logical_and.set_asm("and %reg, %reg", r1+r2, rd_2);
     logical_and.set_decoder(op_2=0x8);
     
-    /* // compare */
-    /* cp.set_asm("cpc %reg, %reg", r1+r2, rd_2); */
-    /* cp.set_decoder(op_2=0x5); */
+    // compare
+    cp.set_asm("cpc %reg, %reg", r1+r2, rd_2);
+    cp.set_decoder(op_2=0x5);
 
-    /* // compare with carry */
-    /* cpc.set_asm("cpc %reg, %reg", r1+r2, rd_2); */
-    /* cpc.set_decoder(op_2=0x1); */
+    // compare with carry
+    cpc.set_asm("cpc %reg, %reg", r1+r2, rd_2);
+    cpc.set_decoder(op_2=0x1);
     
     /* // compare skip if equal */
     /* cpse.set_asm("cpse %reg, %reg", r1+r2, rd_2); */
@@ -85,8 +84,8 @@ AC_ISA(avr1){
     mul.set_decoder(op_2=0x27);
 
     // or - logical or
-    or.set_asm("or %reg, %reg", r1+r2, rd_2);
-    or.set_decoder(op_2=0xA);
+    logical_or.set_asm("or %reg, %reg", r1+r2, rd_2);
+    logical_or.set_decoder(op_2=0xA);
 
     // sbc - subtract with carry
     sbc.set_asm("sbc %reg, %reg", r1+r2, rd_2);
