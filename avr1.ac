@@ -9,7 +9,7 @@ AC_ARCH(avr1){
 
  ARCH_CTOR(avr1) {
 
-    ac_isa(“avr_isa.ac");
+    ac_isa("avr1_isa.ac");
     set_endian("little");
 
  };
