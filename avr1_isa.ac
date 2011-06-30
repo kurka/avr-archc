@@ -1,61 +1,102 @@
 
 AC_ISA(avr1){
-// sao 13 tipos básicos
+  // sao 13 tipos básicos
 
   ac_format Type_RegDir_Rd  = "%op:11 %rd:5";
 
-  ac_format Type_RegDir_Rr_Rd  = "%op:6 %rr:5 %rd:5";
+  //  ac_format Type_RegDir_Rr_Rd  = "%op:6 %rr:5 %rd:5";
+  ac_format Type_RegDir_Rr_Rd  = "%op:6 %r1:1 %rd:5 %r2:4";
 
   ac_format Type_IO_Direct  = "%op:5 [%rd:5 | %rr:5] %addr:6";
 
   ac_format Type_Data_Direct_Addr  = "%op:12 [%rd:4 | %rr:4] %addr:16";// OBSERVE que sao 2 palavras de 16 bits.Observe q rd/rr tem 4 bits apenas(R16-R31)..
 
-	ac_format Type_Data_Indirect_With_Displacement  = "%op:5 [%rr:5 | %rd:5] %q:6 [%Y:16 | %Z:16]";
-	//where is the opcode???
-	ac_format Type_Data_Indirect_Addr_x  = "[%x:16 | %y:16 | %z:16]";
+  ac_format Type_Data_Indirect_With_Displacement  = "%op:5 [%rr:5 | %rd:5] %q:6 [%Y:16 | %Z:16]";
+  //where is the opcode???
+  ac_format Type_Data_Indirect_Addr_x  = "[%x:16 | %y:16 | %z:16]";
+  
+  //decrementa 1 antes de acessar a memoria
+  ac_format Type_Data_Indirect_With_Predecrement_Addr  = "[%x:16 | %y:16 | %z:16]";
 
-	//decrementa 1 antes de acessar a memoria
-	ac_format Type_Data_Indirect_With_Predecrement_Addr  = "[%x:16 | %y:16 | %z:16]";
+  //incrementa 1 antes de acessar a memoria
+  ac_format Type_Data_Indirect_With_Preincrement_Addr  = "[%x:16 | %y:16 | %z:16]";
 
-	//incrementa 1 antes de acessar a memoria
-	ac_format Type_Data_Indirect_With_Preincrement_Addr  = "[%x:16 | %y:16 | %z:16]";
-
-
-	//Program Memory Constant Addressing using the LPM, ELPM, and SPM Instructions NÂO IMPLEMENTADA
-	//Program Memory with Post-increment using the LPM Z+ and ELPM Z+ Instruction NÂO IMPLEMENTADA
-
-	//Direct Program Addressing, JMP and CALL, modifica o PC, 2 palavras, pula mais longe
-	ac_format Type_Direct_Program_Addressing  = "%op:10 %MSB:6 %LSD:16";
-
-	//Indirect Program Addressing, IJMP and ICALL
-	ac_format Type_Indirect_Program_Addressing  = "%z:16";
-
-	//Relative Program Addressing, RJMP and RCALL (PC <= PC+1+k), k vai de -2048 a +2047
-	ac_format Type_Relative_Program_Addressing  = "%op:4 %k:12";
-
-
-	
-	ac_instr<Type_RegDir_Rr_Rd> add, adc, sub, sbc, and, or, eor, mul, muls, cpse, cp, cpc, mov, 
-
-
-	// default gas assembler uses numbers as register names
+  
+  //Program Memory Constant Addressing using the LPM, ELPM, and SPM Instructions NÂO IMPLEMENTADA
+  //Program Memory with Post-increment using the LPM Z+ and ELPM Z+ Instruction NÂO IMPLEMENTADA
+  
+  //Direct Program Addressing, JMP and CALL, modifica o PC, 2 palavras, pula mais longe
+  ac_format Type_Direct_Program_Addressing  = "%op:10 %MSB:6 %LSD:16";
+  
+  //Indirect Program Addressing, IJMP and ICALL
+  ac_format Type_Indirect_Program_Addressing  = "%z:16";
+  
+  //Relative Program Addressing, RJMP and RCALL (PC <= PC+1+k), k vai de -2048 a +2047
+  ac_format Type_Relative_Program_Addressing  = "%op:4 %k:12";
+  
+  
+  
+  ac_instr<Type_RegDir_Rr_Rd> add, adc, sub, sbc, and, or, eor, mul, muls, cpse, cp, cpc, mov;
+    
+    
+  // default gas assembler uses numbers as register names
   ac_asm_map reg {
-
-     "$"[0..31] = [0..16];
+    
+    "$"[0..31] = [0..16];
   }
-
-	
- ISA_CTOR(avr1) {
-
-		//add sem carry
+  
+  
+  ISA_CTOR(avr1) {
+    
+    //add sem carry
     add.set_asm("add %reg, %reg", rr, rd);
-    add.set_decoder(op=6);
-		
-		//add com carry
-    addc.set_asm("adc %reg, %reg", rr, rd);
-    addc.set_decoder(op=6);
+    add.set_decoder(op=0x3);
 
-}
+    //add com carry
+    adc.set_asm("adc %reg, %reg", rr, rd);
+    adc.set_decoder(op=0x7);
+
+    // logical and
+    logical_and.set_asm("and %reg, %reg", rr, rd);
+    logical_and.set_decoder(op=0x8);
+    
+    // compare
+    cp.set_asm("cpc %reg, %reg", rr, rd);
+    cp.set_decoder(op=0x5);
+
+    // compare with carry
+    cpc.set_asm("cpc %reg, %reg", rr, rd);
+    cpc.set_decoder(op=0x1);
+    
+    // compare skip if equal
+    cpse.set_asm("cpse %reg, %reg", rr, rd);
+    cpse.set_decoder(op=0x4);
+
+    // exclusive OR
+    eor.set_asm("eor %reg, %reg", rr, rd);
+    eor.set_decoder(op=0x9);
+    
+    // mov
+    mov.set_asm("mov %reg, %reg", rr, rd);
+    mov.set_decoder(op=0xB);
+    
+    // mul - unsigned
+    mul.set_asm("mul %reg, %reg", rr, rd);
+    mul.set_decoder(op=0x27);
+
+    // or - logical or
+    or.set_asm("or %reg, %reg", rr, rd);
+    or.set_decoder(op=0xA);
+
+    // sbc - subtract with carry
+    sbc.set_asm("sbc %reg, %reg", rr, rd);
+    sbc.set_decoder(op=0x2);
+
+    // sub- subtract without carry
+    sub.set_asm("sub %reg, %reg", rr, rd);
+    sub.set_decoder(op=0x6);
+
+  }
 
 
 	
