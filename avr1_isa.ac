@@ -1,7 +1,7 @@
 AC_ISA(avr1){
   // sao 13 tipos básicos
 
-  /* ac_format Type_RegDir_Rd  = "%op_1:11 %rd_1:5"; */
+  ac_format Type_RegDir_Rd  = "%op_1:6 %rd_1:10";
 
   //  ac_format Type_RegDir_Rr_Rd  = "%op:6 %rr:5 %rd:5";
   ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
@@ -39,6 +39,9 @@ AC_ISA(avr1){
     mov,
     cp, cpc;// cpse;		
     
+
+  ac_instr<Type_RegDir_Rd> rol, lsl, tst, clr;
+
   // default gas assembler uses numbers as register names
   ac_asm_map reg {
     "$"[0..31] = [0..31];
@@ -47,6 +50,22 @@ AC_ISA(avr1){
   
   ISA_CTOR(avr1) {
     
+    //rol 
+    rol.set_asm("rol %reg", rd_1);
+    rol.set_decoder(op_1=0x7);
+
+    //lsl
+    lsl.set_asm("lsl %reg", rd_1);
+    lsl.set_decoder(op_1=0x3);
+
+    //tst
+    tst.set_asm("tst %reg", rd_1);
+    tst.set_decoder(op_1=0x8);
+
+    //clr
+    clr.set_asm("clr %reg", rd_1);
+    clr.set_decoder(op_1=0x9);
+
     //add sem carry
     add.set_asm("add %reg, %reg", r1+r2, rd_2);
     add.set_decoder(op_2=0x3);

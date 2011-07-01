@@ -11,9 +11,8 @@ struct flags_t {
   bool I, T, H, S, V, N, Z, C;
 } flags;
   
-void ac_behavior (Type_RegDir_Rr_Rd) {
-
-}
+void ac_behavior (Type_RegDir_Rr_Rd) {}
+void ac_behavior (Type_RegDir_Rd) {}
 
 void ac_behavior(instruction) {
   ac_pc = npc;
@@ -269,5 +268,73 @@ void ac_behavior(mul) {
   dbg_printf("Result = %#x\n", RB[rd_2]);
 }
 
+void ac_behavior(clr) {
+  dbg_printf("clr r%d", rd_1);
+  RB[rd_1] = RB[rd_1] ^ RB[rd_1];
 
+  flags.S = false;
+  flags.V = false;
+  flags.N = false;
+  flags.Z = true;
+
+  dbg_printf("Result = %#x\n", RB[rd_1]);
+}
+
+void ac_behavior(tst) {
+  dbg_printf("tst r%d", rd_1);
+
+  int r = RB[rd_1] & RB[rd_1];
+
+  RB[rd_1] = RB[rd_1] & RB[rd_1];
+
+  bool r7 = r & (1 << 7) == (1 << 7) ? true : false;
+  flags.S = flags.N ^ flags.V;
+  flags.V = false;
+  flags.N = r7;
+  flags.Z = r == 0 ? true : false;
+
+  dbg_printf("Result = %#x\n", RB[rd_1]);
+}
+
+void ac_behavior(lsl) {
+  dbg_printf("clr r%d", rd_1);
+
+  int r = RB[rd_1];
+  bool rd7 = r & (1 << 7) == (1 << 7) ? true : false;
+  flags.C = rd7;
+  bool rd3 = RB[rd_1] & (1 << 3) == (1 << 3) ? true : false;
+  bool r7 = r & (1 << 6) == (1 << 6) ? true : false;
+
+  RB[rd_1] = RB[rd_1] << 1;
+
+  flags.H = rd3;
+  flags.S = flags.N ^ flags.V;
+  flags.V = flags.N ^ flags.C;
+  flags.N = r7;
+  flags.Z = r == 0 ? true : false;
+
+  dbg_printf("Result = %#x\n", RB[rd_1]);
+}
+
+void ac_behavior(rol) {
+  dbg_printf("rol r%d", rd_1);
+  
+  int old_carry = flags.C == true ? 1 : 0;
+  int r = RB[rd_1];
+  bool rd7 = r & (1 << 7) == (1 << 7) ? true : false;
+  flags.C = rd7;
+  bool rd3 = RB[rd_1] & (1 << 3) == (1 << 3) ? true : false;
+  bool r7 = r & (1 << 6) == (1 << 6) ? true : false;
+
+  RB[rd_1] = RB[rd_1] << 1;
+  RB[rd_1] = RB[rd_1] & old_carry;
+
+  flags.H = rd3;
+  flags.S = flags.N ^ flags.V;
+  flags.V = flags.N ^ flags.C;
+  flags.N = r7;
+  flags.Z = r == 0 ? true : false;
+
+  dbg_printf("Result = %#x\n", RB[rd_1]);
+}
 
