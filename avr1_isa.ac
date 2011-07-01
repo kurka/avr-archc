@@ -3,8 +3,9 @@ AC_ISA(avr1){
 
   ac_format Type_RegDir_Rd  = "%op_1:6 %rd_1:10";
 
-  //  ac_format Type_RegDir_Rr_Rd  = "%op:6 %rr:5 %rd:5";
   ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
+  
+  ac_format Type_RegDir_Rr_Rd  = "%op_2:4 %k1:4 %rd_3:4 %k2:4";
 
   /* ac_format Type_IO_Direct  = "%op_3:5 [%rd_3:5 | %rr:5] %addr:6"; */
 
@@ -41,6 +42,8 @@ AC_ISA(avr1){
     
 
   ac_instr<Type_RegDir_Rd> rol, lsl, tst, clr;
+  
+  ac_instr<Type_RegDir_Rd> andi, cbr, cpi, ldi, ori, sbr, sbci, subi;
 
   // default gas assembler uses numbers as register names
   ac_asm_map reg {
@@ -49,6 +52,10 @@ AC_ISA(avr1){
   
   
   ISA_CTOR(avr1) {
+    
+    //subi 
+    subi.set_asm("subi %reg %immed", rd_1);
+    rol.set_decoder(op_1=0x7);
     
     //rol 
     rol.set_asm("rol %reg", rd_1);
