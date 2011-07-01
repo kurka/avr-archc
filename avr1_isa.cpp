@@ -2,7 +2,7 @@
 #include "avr1_isa_init.cpp"
 #include "avr1_bhv_macros.H"
 
-//#define DEBUG_MODEL
+#define DEBUG_MODEL
 #include "ac_debug_model.H"
 
 using namespace avr1_parms;
@@ -18,7 +18,7 @@ void ac_behavior (Type_Branches) {}
 void ac_behavior (Type_Relative_Program_Addressing) {}
 void ac_behavior(instruction) {
   ac_pc = npc;
-  npc = ac_pc + 1;
+  npc = npc + 1;
 }
 
 void ac_behavior(begin) {
@@ -343,10 +343,16 @@ void ac_behavior(rol) {
 void ac_behavior(rjmp) {
   dbg_printf("rjmp %d\n", k_7);
   
+  int j = k_7;
+  if ( (k_7 & (1<<11) ) == (1<<11) ) {
+    j = ( (~k_7) + 1) & 0xFFF;
+    j = -j;
+  }
+  
   ac_pc = npc;
-  npc = ac_pc + k_7;
+  npc = npc + j;
 
-  dbg_printf("Result = %#x\n", RB[rd_1]);
+  dbg_printf("Result = %#x %d\n", ac_pc + j, j);
 }
 
 void ac_behavior(breq) {
