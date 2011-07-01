@@ -16,9 +16,12 @@ void ac_behavior (Type_RegDir_Rd) {}
 void ac_behavior (Type_RegDir_Rd_Imm) {}
 void ac_behavior (Type_Branches) {}
 void ac_behavior (Type_Relative_Program_Addressing) {}
+
 void ac_behavior(instruction) {
   ac_pc = npc;
   npc = npc + 2;
+  // ac_pc = 0x54;
+  // npc = 0x54;
 }
 
 void ac_behavior(begin) {
@@ -35,6 +38,7 @@ void ac_behavior(begin) {
   flags.C = false;
   
   RB[0] = 0;
+  // ac_pc = 0x54;
   npc = ac_pc + 2;
   
   for (int regNum = 0; regNum < 32; regNum++) {
@@ -48,7 +52,12 @@ void ac_behavior(end) {
 
 void ac_behavior(add) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
+
+
   dbg_printf("add r%d, r%d\n", rd_2, rr);
+  dbg_printf("r1:%d, r2:%d\n", r1, r2);
+  dbg_printf("rd:%d\n", rd_2);
+  dbg_printf("op:%d\n", op_2);
 
   int r = RB[rd_2] + RB[rr];
 
@@ -259,7 +268,12 @@ void ac_behavior(sub) {
 
 void ac_behavior(mul) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("add r%d, r%d\n", rd_2, rr);
+  dbg_printf("mul r%d, r%d\n", rd_2, rr);
+
+  dbg_printf("r1:%d, r2:%d\n", r1, r2);
+  dbg_printf("rd:%d\n", rd_2);
+  dbg_printf("op:%d\n", op_2);
+
   int r = RB[rr] * RB[rd_2];
   int r_0 = r & 0xFF;
   int r_1 = (r & 0xFF00) >> 8;
@@ -343,19 +357,24 @@ void ac_behavior(rol) {
 }
 
 void ac_behavior(rjmp) {
-  dbg_printf("rjmp %d\n", k_7);
   
+  // int k1 = (k_7 & 0xF00) >> 8;
+  // int k2 = (k_7 & 0x0FF) << 4;
+
+  // int j = (k1 + k2) << 1;
   int j = k_7;
+
+  dbg_printf("rjmp %d\n", j);
+
   if ( (j & (1<<11) ) == (1<<11) ) {
     j = ( (~j) + 1) & 0xFFF;
     j = -j;
   }
 
-  dbg_printf("npc = %d\n", (int)npc);
-  ac_pc = npc;
-  npc = npc + j;
+  ac_pc = ac_pc + j;
+  npc = ac_pc + 2;
 
-  dbg_printf("Result = %#x %d\n", ac_pc + j, j);
+  dbg_printf("Result = %#x %d\n", (int)ac_pc, j);
 }
 
 void ac_behavior(breq) {

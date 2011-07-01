@@ -3,7 +3,8 @@ AC_ISA(avr1){
 
   ac_format Type_RegDir_Rd  = "%op_1:6 %rd_1:10";
 
-  ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
+   ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
+  /* ac_format Type_RegDir_Rr_Rd  = "%r2:4 %rd_2:5 %r1:1 %op_2:6"; */
   
   ac_format Type_RegDir_Rd_Imm  = "%op_3:4 %k1:4 %rd_3:4 %k2:4";
 
@@ -32,7 +33,9 @@ AC_ISA(avr1){
   /* ac_format Type_Indirect_Program_Addressing  = "%z:16"; */
   
   //Relative Program Addressing, RJMP and RCALL (PC <= PC+1+k), k vai de -2048 a +2047
+
   ac_format Type_Relative_Program_Addressing  = "%op_7:4 %k_7:12";
+  /* ac_format Type_Relative_Program_Addressing  = "%k_7:12 %op_7:4"; */
  
   ac_format Type_Branches  = "%op_8:6 %k_8:7 %f:3";
   
@@ -180,7 +183,7 @@ AC_ISA(avr1){
     /* subi.set_asm("subi %reg, %imm", rd_3, k1+k2); */
     /* subi.set_decoder(op_3=0x5); */
 
-    // relative jump
+    //relative jump
     rjmp.set_asm("rjmp %imm", k_7);
     rjmp.set_decoder(op_7=0xC);
 
