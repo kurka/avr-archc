@@ -18,7 +18,7 @@ void ac_behavior (Type_Branches) {}
 void ac_behavior (Type_Relative_Program_Addressing) {}
 void ac_behavior(instruction) {
   ac_pc = npc;
-  npc = ac_pc + 2;
+  npc = ac_pc + 1;
 }
 
 void ac_behavior(begin) {
@@ -32,7 +32,7 @@ void ac_behavior(begin) {
   flags.C = false;
   
   RB[0] = 0;
-  npc = ac_pc + 2;
+  npc = ac_pc + 1;
   
   for (int regNum = 0; regNum < 32; regNum++) {
     RB[regNum] = 0;
@@ -46,7 +46,7 @@ void ac_behavior(end) {
 
 void ac_behavior(add) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("add r%d, r%d", rd_2, rr);
+  dbg_printf("add r%d, r%d\n", rd_2, rr);
 
   int r = RB[rd_2] + RB[rr];
 
@@ -71,7 +71,7 @@ void ac_behavior(add) {
 
 void ac_behavior(adc) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("adc r%d, r%d", rd_2, rr);
+  dbg_printf("adc r%d, r%d\n", rd_2, rr);
 
   int carry = 0;
   if (flags.C == true) {
@@ -100,7 +100,7 @@ void ac_behavior(adc) {
 
 void ac_behavior(logical_and) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("and r%d, r%d", rd_2, rr);
+  dbg_printf("and r%d, r%d\n", rd_2, rr);
 
   int r = RB[rd_2] & RB[rr];
 
@@ -118,7 +118,7 @@ void ac_behavior(logical_and) {
 
 void ac_behavior(cp) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("cp r%d, r%d", rd_2, rr);
+  dbg_printf("cp r%d, r%d\n", rd_2, rr);
   int r = RB[rd_2] - RB[rr];
   bool rd3 = RB[rd_2] & (1 << 3) == (1 << 3) ? true : false;
   bool rr3 = RB[rr] & (1 << 3) == (1 << 3) ? true : false;
@@ -141,7 +141,7 @@ void ac_behavior(cp) {
 
 void ac_behavior(cpc) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("cpc r%d, r%d", rd_2, rr);
+  dbg_printf("cpc r%d, r%d\n", rd_2, rr);
   int carry = 0;
   if (flags.C == true) {
     carry = 1;
@@ -167,7 +167,7 @@ void ac_behavior(cpc) {
 
 void ac_behavior(eor) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("eor r%d, r%d", rd_2, rr);
+  dbg_printf("eor r%d, r%d\n", rd_2, rr);
   int r = RB[rr] ^ RB[rd_2];
   RB[rd_2] = RB[rr] ^ RB[rd_2];
   bool r7 = r & (1 << 7) == (1 << 7) ? true : false;
@@ -180,7 +180,7 @@ void ac_behavior(eor) {
 
 void ac_behavior(logical_or) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("eor r%d, r%d", rd_2, rr);
+  dbg_printf("eor r%d, r%d\n", rd_2, rr);
   int r = RB[rr] | RB[rd_2];
   RB[rd_2] = RB[rr] | RB[rd_2];
   bool r7 = r & (1 << 7) == (1 << 7) ? true : false; 
@@ -193,14 +193,14 @@ void ac_behavior(logical_or) {
 
 void ac_behavior(mov) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("mov r%d, r%d", rd_2, rr);
+  dbg_printf("mov r%d, r%d\n", rd_2, rr);
   RB[rd_2] = RB[rr];
   dbg_printf("Result = %#x\n", RB[rd_2]);
 }
 
 void ac_behavior(sbc) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("sbc r%d, r%d", rd_2, rr);
+  dbg_printf("sbc r%d, r%d\n", rd_2, rr);
 
   int carry = 0;
   if (flags.C == true) 
@@ -230,7 +230,7 @@ void ac_behavior(sbc) {
 
 void ac_behavior(sub) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("sub r%d, r%d", rd_2, rr);
+  dbg_printf("sub r%d, r%d\n", rd_2, rr);
 
   int r = RB[rd_2] - RB[rr];
 
@@ -257,7 +257,7 @@ void ac_behavior(sub) {
 
 void ac_behavior(mul) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
-  dbg_printf("add r%d, r%d", rd_2, rr);
+  dbg_printf("add r%d, r%d\n", rd_2, rr);
   int r = RB[rr] * RB[rd_2];
   int r_0 = r & 0xFF;
   int r_1 = (r & 0xFF00) >> 8;
@@ -271,7 +271,7 @@ void ac_behavior(mul) {
 }
 
 void ac_behavior(clr) {
-  dbg_printf("clr r%d", rd_1);
+  dbg_printf("clr r%d\n", rd_1);
   RB[rd_1] = RB[rd_1] ^ RB[rd_1];
 
   flags.S = false;
@@ -283,7 +283,7 @@ void ac_behavior(clr) {
 }
 
 void ac_behavior(tst) {
-  dbg_printf("tst r%d", rd_1);
+  dbg_printf("tst r%d\n", rd_1);
 
   int r = RB[rd_1] & RB[rd_1];
 
@@ -299,7 +299,7 @@ void ac_behavior(tst) {
 }
 
 void ac_behavior(lsl) {
-  dbg_printf("lsl r%d", rd_1);
+  dbg_printf("lsl r%d\n", rd_1);
 
   int r = RB[rd_1];
   bool rd7 = r & (1 << 7) == (1 << 7) ? true : false;
@@ -319,7 +319,7 @@ void ac_behavior(lsl) {
 }
 
 void ac_behavior(rol) {
-  dbg_printf("rol r%d", rd_1);
+  dbg_printf("rol r%d\n", rd_1);
   
   int old_carry = flags.C == true ? 1 : 0;
   int r = RB[rd_1];
@@ -341,7 +341,7 @@ void ac_behavior(rol) {
 }
 
 void ac_behavior(rjmp) {
-  dbg_printf("rjmp %d", k_7);
+  dbg_printf("rjmp %d\n", k_7);
   
   ac_pc = npc;
   npc = ac_pc + k_7;
@@ -350,7 +350,7 @@ void ac_behavior(rjmp) {
 }
 
 void ac_behavior(breq) {
-  dbg_printf("breq %d", k_8);
+  dbg_printf("breq %d\n", k_8);
   
   if (flags.Z) {
     ac_pc = npc;
@@ -361,7 +361,7 @@ void ac_behavior(breq) {
 }
 
 void ac_behavior(brge) {
-  dbg_printf("brge %d", k_8);
+  dbg_printf("brge %d\n", k_8);
   
   if (!(flags.N ^ flags.V)) {
     ac_pc = npc;
@@ -372,7 +372,7 @@ void ac_behavior(brge) {
 }
 
 void ac_behavior(brlo) {
-  dbg_printf("brlo %d", k_8);
+  dbg_printf("brlo %d\n", k_8);
   
   if (flags.C) {
     ac_pc = npc;
@@ -383,7 +383,7 @@ void ac_behavior(brlo) {
 }
 
 void ac_behavior(brlt) {
-  dbg_printf("brlt %d", k_8);
+  dbg_printf("brlt %d\n", k_8);
   
   if (flags.N ^ flags.V) {
     ac_pc = npc;
@@ -394,7 +394,7 @@ void ac_behavior(brlt) {
 }
 
 void ac_behavior(brsh) {
-  dbg_printf("brsh %d", k_8);
+  dbg_printf("brsh %d\n", k_8);
   
   if (!flags.C) {
     ac_pc = npc;
@@ -405,7 +405,7 @@ void ac_behavior(brsh) {
 }
 
 void ac_behavior(brne) {
-  dbg_printf("brne %d", k_8);
+  dbg_printf("brne %d\n", k_8);
   
   if (!flags.Z) {
     ac_pc = npc;
@@ -417,7 +417,7 @@ void ac_behavior(brne) {
 
 void ac_behavior(andi) {
   unsigned k = (k1 << 4) + (k2 & 0xF);
-  dbg_printf("andi r%d, %d", rd_3, k);
+  dbg_printf("andi r%d, %d\n", rd_3, k);
   
   int r = RB[rd_3] & k;
   RB[rd_3] =  RB[rd_3] & k;
@@ -434,7 +434,7 @@ void ac_behavior(andi) {
 
 void ac_behavior(ldi) {
   unsigned k = (k1 << 4) + (k2 & 0xF);
-  dbg_printf("ldi r%d, %d", rd_3, k);
+  dbg_printf("ldi r%d, %d\n", rd_3, k);
   
   RB[rd_3] = k;
 
@@ -443,7 +443,7 @@ void ac_behavior(ldi) {
 
 // void ac_behavior(andi) {
 //   unsigned k = (k1 << 4) + (k2 & 0xF);
-//   dbg_printf("andi r%d, %d", rd_3, k);
+//   dbg_printf("andi r%d, %d\n", rd_3, k);
   
 //   int r = RB[rd_3] & k;
 //   RB[rd_3] =  RB[rd_3] & k;
