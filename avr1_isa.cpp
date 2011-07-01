@@ -18,10 +18,13 @@ void ac_behavior (Type_Branches) {}
 void ac_behavior (Type_Relative_Program_Addressing) {}
 void ac_behavior(instruction) {
   ac_pc = npc;
-  npc = npc + 1;
+  npc = npc + 2;
 }
 
 void ac_behavior(begin) {
+
+  dbg_printf("begin!");
+
   flags.I = false;
   flags.T = false;
   flags.H = false;
@@ -32,12 +35,11 @@ void ac_behavior(begin) {
   flags.C = false;
   
   RB[0] = 0;
-  npc = ac_pc + 1;
+  npc = ac_pc + 2;
   
   for (int regNum = 0; regNum < 32; regNum++) {
     RB[regNum] = 0;
   }
-  hi = 0; lo = 0;
 }
 
 void ac_behavior(end) {
@@ -344,11 +346,12 @@ void ac_behavior(rjmp) {
   dbg_printf("rjmp %d\n", k_7);
   
   int j = k_7;
-  if ( (k_7 & (1<<11) ) == (1<<11) ) {
-    j = ( (~k_7) + 1) & 0xFFF;
+  if ( (j & (1<<11) ) == (1<<11) ) {
+    j = ( (~j) + 1) & 0xFFF;
     j = -j;
   }
-  
+
+  dbg_printf("npc = %d\n", (int)npc);
   ac_pc = npc;
   npc = npc + j;
 
