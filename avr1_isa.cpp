@@ -13,10 +13,11 @@ struct flags_t {
   
 void ac_behavior (Type_RegDir_Rr_Rd) {}
 void ac_behavior (Type_RegDir_Rd) {}
-
+void ac_behavior (Type_Branches) {}
+void ac_behavior (Type_Relative_Program_Addressing) {}
 void ac_behavior(instruction) {
   ac_pc = npc;
-  npc = ac_pc + 4;
+  npc = ac_pc + 2;
 }
 
 void ac_behavior(begin) {
@@ -30,7 +31,7 @@ void ac_behavior(begin) {
   flags.C = false;
   
   RB[0] = 0;
-  npc = ac_pc + 4;
+  npc = ac_pc + 2;
   
   for (int regNum = 0; regNum < 32; regNum++) {
     RB[regNum] = 0;
@@ -297,7 +298,7 @@ void ac_behavior(tst) {
 }
 
 void ac_behavior(lsl) {
-  dbg_printf("clr r%d", rd_1);
+  dbg_printf("lsl r%d", rd_1);
 
   int r = RB[rd_1];
   bool rd7 = r & (1 << 7) == (1 << 7) ? true : false;
@@ -336,5 +337,105 @@ void ac_behavior(rol) {
   flags.Z = r == 0 ? true : false;
 
   dbg_printf("Result = %#x\n", RB[rd_1]);
+}
+
+// void ac_behavior(andi) {
+//   unsigned k = k1 
+//   unsigned rr = (r1 << 4) + (r2 & 0xF);
+//   dbg_printf("andi r%d, %d", rd_3, k);
+  
+//   int old_carry = flags.C == true ? 1 : 0;
+//   int r = RB[rd_1];
+//   bool rd7 = r & (1 << 7) == (1 << 7) ? true : false;
+//   flags.C = rd7;
+//   bool rd3 = RB[rd_1] & (1 << 3) == (1 << 3) ? true : false;
+//   bool r7 = r & (1 << 6) == (1 << 6) ? true : false;
+
+//   RB[rd_1] = RB[rd_1] << 1;
+//   RB[rd_1] = RB[rd_1] & old_carry;
+
+//   flags.H = rd3;
+//   flags.S = flags.N ^ flags.V;
+//   flags.V = flags.N ^ flags.C;
+//   flags.N = r7;
+//   flags.Z = r == 0 ? true : false;
+
+//   dbg_printf("Result = %#x\n", RB[rd_1]);
+// }
+
+
+void ac_behavior(rjmp) {
+  dbg_printf("rjmp %d", k_7);
+  
+  ac_pc = npc;
+  npc = ac_pc + k_7;
+
+  dbg_printf("Result = %#x\n", RB[rd_1]);
+}
+
+void ac_behavior(breq) {
+  dbg_printf("breq %d", k_8);
+  
+  if (flags.Z) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
+}
+
+void ac_behavior(brge) {
+  dbg_printf("brge %d", k_8);
+  
+  if (!(flags.N ^ flags.V)) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
+}
+
+void ac_behavior(brlo) {
+  dbg_printf("brlo %d", k_8);
+  
+  if (flags.C) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
+}
+
+void ac_behavior(brlt) {
+  dbg_printf("brlt %d", k_8);
+  
+  if (flags.N ^ flags.V) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
+}
+
+void ac_behavior(brsh) {
+  dbg_printf("brsh %d", k_8);
+  
+  if (!flags.C) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
+}
+
+void ac_behavior(brne) {
+  dbg_printf("brne %d", k_8);
+  
+  if (!flags.Z) {
+    ac_pc = npc;
+    npc = ac_pc + k_8;
+  }
+
+  dbg_printf("Result = %#x\n", k_8);
 }
 
