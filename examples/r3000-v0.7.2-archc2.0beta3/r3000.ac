@@ -1,0 +1,59 @@
+/**
+ * @file      r3000.ac
+ * @author    Marcio Juliato
+ *
+ *            The ArchC Team
+ *            http://www.archc.org/
+ *
+ *            Computer Systems Laboratory (LSC)
+ *            IC-UNICAMP
+ *            http://www.lsc.ic.unicamp.br
+ *
+ * @version   1.0
+ * @date      Thu, 29 Jun 2006 14:49:06 -0300
+ * 
+ * @brief     The ArchC R3000 cycle-accurate model.
+ * 
+ * @attention Copyright (C) 2002-2006 --- The ArchC Team
+ * 
+ * This program is free software; you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+AC_ARCH(r3000)
+{
+ ac_wordsize 32;
+ ac_mem DM:5M;
+ ac_regbank RB:34;
+
+ ac_format F_IF_ID = "%npc:32";
+ ac_format F_ID_EX = "%npc:32 %data1:32 %data2:32 %imm:32:s rs:5 %rt:5 %rd:5 %regwrite:1 %memread:1 %memwrite:1";
+ ac_format F_EX_MEM = "%alures:32 %wdata:32 %rdest:5 %regwrite:1 %memread:1 %memwrite:1";
+ ac_format F_MEM_WB = "%wbdata:32 %rdest:5 %regwrite:1";
+
+ ac_reg<F_IF_ID> IF_ID;
+ ac_reg<F_ID_EX> ID_EX;
+ ac_reg<F_EX_MEM> EX_MEM;
+ ac_reg<F_MEM_WB> MEM_WB;
+
+ ac_pipe G = {IF, ID, EX, MEM, WB};
+ 
+ ARCH_CTOR(r3000)
+ {
+  ac_isa("r3000_isa.ac");
+  set_endian("big"); 
+ };
+};
+

@@ -1,0 +1,43 @@
+/**
+ * @file      pic16F84.ac
+ * @author    Gabriel Renaldo Laureano - laureano@inf.ufsc.br
+ *            Leonardo Taglietti       - leonardo@inf.ufsc.br
+ *
+ *            The ArchC Team
+ *            http://www.archc.org/
+ *
+ *
+ * @version   1.0
+ * @date      Thu, 29 Jun 2006 14:49:06 -0300
+ * 
+ * @brief     The ArchC PIC 16F84 functional model.
+ * 
+ * @attention Copyright (C) 2002-2006 --- The ArchC Team
+ * 
+ * This program is free software; you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+AC_ARCH(pic16F84){
+    ac_mem MEM:5M;
+    ac_regbank BANK:256;
+    ac_wordsize 8;
+    ac_reg W;
+
+    ARCH_CTOR(pic16F84) {
+        ac_isa("pic16F84_isa.ac");
+        set_endian("big");
+    };
+};

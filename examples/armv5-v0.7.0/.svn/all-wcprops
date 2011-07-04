@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/archc-prj/!svn/ver/749/models/armv5/trunk
+END
+armv5e_syscall.H
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/armv5e_syscall.H
+END
+arm_to_archc.relmap
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/arm_to_archc.relmap
+END
+armv5e.ac
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/armv5e.ac
+END
+dynamic_info.ac
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/dynamic_info.ac
+END
+modifiers
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/modifiers
+END
+dynamic_patch.ac
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/dynamic_patch.ac
+END
+ac_rtld.relmap
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/ac_rtld.relmap
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/archc-prj/!svn/ver/327/models/armv5/trunk/COPYING
+END
+defines_gdb
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/archc-prj/!svn/ver/695/models/armv5/trunk/defines_gdb
+END
+armv5e_gdb_funcs.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/archc-prj/!svn/ver/328/models/armv5/trunk/armv5e_gdb_funcs.cpp
+END
+armv5e_syscall.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/armv5e_syscall.cpp
+END
+armv5e_isa.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/archc-prj/!svn/ver/749/models/armv5/trunk/armv5e_isa.cpp
+END
+armv5e_isa.ac
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/archc-prj/!svn/ver/690/models/armv5/trunk/armv5e_isa.ac
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/archc-prj/!svn/ver/767/models/armv5/trunk/README
+END
