@@ -1,0 +1,237 @@
+/**
+ * @file      pic16F84_isa.ac
+ * @author    Gabriel Renaldo Laureano - laureano@inf.ufsc.br
+ *            Leonardo Taglietti       - leonardo@inf.ufsc.br
+ *
+ *            The ArchC Team
+ *            http://www.archc.org/
+ *
+ *
+ * @version   1.0
+ * @date      Thu, 29 Jun 2006 14:49:06 -0300
+ * 
+ * @brief     The ArchC PIC 16F84 functional model.
+ * 
+ * @attention Copyright (C) 2002-2006 --- The ArchC Team
+ * 
+ * This program is free software; you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+/*
+NOTE 1: We consider an instruction word to be 8 bits, and so the PC is increased by 2 instead of 1.
+        Instruction addresses are multipled by 2. We had to add 2 dummy bits at the begin of 
+        each instruction in order to make it 16 bits instead of 14 bits (the real instruction's size
+        of the PIC)
+
+NOTE 2: For Literal and Control operations, we replaced "don't care's" for "zeros" in order to
+        keep instruction formats as simple as possible.
+*/
+
+
+AC_ISA(pic16F84){
+
+    //Format Declarations-----------------------------------------------------------------------------
+    ac_format Format_Byte = "%dummy:2 %opbyte:6 %d:1 %f:7";
+    ac_format Format_Bit = "%dummy:2 %opbit:4 %b:3 %f:7";
+    ac_format Format_Literal = "%dummy:2 %oplit:6 %k:8";
+    ac_format Format_Control = "%dummy:2 %opctrl:3 %kaddress:11";
+    //------------------------------------------------------------------------------------------------
+
+    //Associations of Formats with instructions-------------------------------------------------------
+    ac_instr<Format_Byte>   CLRWDT, CLRW,CLRF,ADDWF,MOVWF,ANDWF,DECF,INCF,MOVF,NOP,IORWF,SUBWF,XORWF,COMF,DECFSZ,INCFSZ,RLF,RRF,SWAPF,RETURN,RETFIE,SLEEP;
+    ac_instr<Format_Bit> BCF, BSF, BTFSC, BTFSS;
+    ac_instr<Format_Literal > MOVLW,ANDLW,IORLW,XORLW, ADDLW, SUBLW, RETLW;
+    ac_instr<Format_Control> GOTO, CALL;
+    //------------------------------------------------------------------------------------------------
+
+    //Assembly and Decoder--------------------------------------------------------------
+    ISA_CTOR(pic16F84){
+                       
+	    //Byte-Oriented File Register Operations---------------------------------------------------------
+        ADDWF.set_asm("addwf %imm, %imm", f, d);
+        ADDWF.set_asm("addwf %exp(align), %imm", f, d);
+        ADDWF.set_asm("addwf %imm", f, d=1);
+        ADDWF.set_asm("addwf %exp(align)", f, d=1);
+	    ADDWF.set_decoder(opbyte=0x07);
+	
+        ANDWF.set_asm("andwf %imm, %imm", f, d);
+        ANDWF.set_asm("andwf %exp(align), %imm", f, d);
+        ANDWF.set_asm("andwf %imm", f, d=1);
+        ANDWF.set_asm("andwf %exp(align)", f, d=1);
+	    ANDWF.set_decoder(opbyte=0x05);
+	
+        CLRF.set_asm("clrf %imm", f);
+        CLRF.set_asm("clrf %exp(align)", f);
+	    CLRF.set_decoder(opbyte=0x01, d=1);
+	
+	    CLRW.set_asm("clrw");
+	    CLRW.set_decoder(opbyte=0x01, d=0, f=3);
+	
+        COMF.set_asm("comf %imm, %imm", f, d);
+        COMF.set_asm("comf %exp(align), %imm", f, d);
+        COMF.set_asm("comf %imm", f, d=1);
+        COMF.set_asm("comf %exp(align)", f, d=1);
+	    COMF.set_decoder(opbyte=0x09);
+	
+        DECF.set_asm("decf %imm, %imm", f, d);
+        DECF.set_asm("decf %exp(align), %imm", f, d);
+        DECF.set_asm("decf %imm", f, d=1);
+        DECF.set_asm("decf %exp(align)", f, d=1);
+	    DECF.set_decoder(opbyte=0x03);
+	
+        DECFSZ.set_asm("decfsz %imm, %imm", f, d);
+        DECFSZ.set_asm("decfsz %exp(align), %imm", f, d);
+        DECFSZ.set_asm("decfsz %imm", f, d=1);
+        DECFSZ.set_asm("decfsz %exp(align)", f, d=1);
+	    DECFSZ.set_decoder(opbyte=0x0B);
+	
+        INCF.set_asm("incf %imm, %imm", f, d);
+        INCF.set_asm("incf %exp(align), %imm", f, d);
+        INCF.set_asm("incf %imm", f, d=1);
+        INCF.set_asm("incf %exp(align)", f, d=1);
+	    INCF.set_decoder(opbyte=0x0A);
+	
+        INCFSZ.set_asm("incfsz %imm, %imm", f, d);
+        INCFSZ.set_asm("incfsz %exp(align), %imm", f, d);
+        INCFSZ.set_asm("incfsz %imm", f, d=1);
+        INCFSZ.set_asm("incfsz %exp(align)", f, d=1);
+	    INCFSZ.set_decoder(opbyte=0x0F);
+	
+        IORWF.set_asm("iorwf %imm, %imm", f, d);
+        IORWF.set_asm("iorwf %exp(align), %imm", f, d);
+        IORWF.set_asm("iorwf %imm", f, d=1);
+        IORWF.set_asm("iorwf %exp(align)", f, d=1);
+	    IORWF.set_decoder(opbyte=0x04);
+	
+        MOVF.set_asm("movf %imm, %imm", f, d);
+        MOVF.set_asm("movf %exp(align), %imm", f, d);
+        MOVF.set_asm("movf %imm", f, d=1);
+        MOVF.set_asm("movf %exp(align)", f, d=1);
+	    MOVF.set_decoder(opbyte=0x08);
+	
+        MOVWF.set_asm("movwf %imm", f);
+        MOVWF.set_asm("movwf %exp(align)", f);        
+	    MOVWF.set_decoder(opbyte=0x00, d=1);
+	
+        NOP.set_asm("nop");
+	    NOP.set_decoder(opbyte=0x00, d=0, f=0x00);
+	
+        RLF.set_asm("rlf %imm, %imm", f, d);
+        RLF.set_asm("rlf %exp(align), %imm", f, d);
+        RLF.set_asm("rlf %imm", f, d=1);
+        RLF.set_asm("rlf %exp(align)", f, d=1);        
+	    RLF.set_decoder(opbyte=0x0D);
+	
+        RRF.set_asm("rrf %imm, %imm", f, d);
+        RRF.set_asm("rrf %exp(align), %imm", f, d);
+        RRF.set_asm("rrf %imm", f, d=1);
+        RRF.set_asm("rrf %exp(align)", f, d=1);
+	    RRF.set_decoder(opbyte=0x0C);
+	
+        SUBWF.set_asm("subwf %imm, %imm", f, d);
+        SUBWF.set_asm("subwf %exp(align), %imm", f, d);
+        SUBWF.set_asm("subwf %imm", f, d=1);
+        SUBWF.set_asm("subwf %exp(align)", f, d=1);
+	    SUBWF.set_decoder(opbyte=0x02);
+	
+        SWAPF.set_asm("swapf %imm, %imm", f, d);
+        SWAPF.set_asm("swapf %exp(align), %imm", f, d);
+        SWAPF.set_asm("swapf %imm", f, d=1);
+        SWAPF.set_asm("swapf %exp(align)", f, d=1);
+	    SWAPF.set_decoder(opbyte=0x0E);
+	
+        XORWF.set_asm("xorwf %imm, %imm", f, d);
+        XORWF.set_asm("xorwf %exp(align), %imm", f, d);
+        XORWF.set_asm("xorwf %imm", f, d=1);
+        XORWF.set_asm("xorwf %exp(align)", f, d=1);        
+	    XORWF.set_decoder(opbyte=0x06);
+
+	    //-------------------------------------------------------------------------------------------------------------
+	    //Bit-Oriented File Register Operations---------------------------------------------------------------
+
+        BCF.set_asm("bcf %imm, %imm", f, b);
+        BCF.set_asm("bcf %exp(align), %imm", f, b);
+        BCF.set_decoder(opbit=0x04);
+
+        BSF.set_asm("bsf %imm, %imm", f, b);
+        BSF.set_asm("bsf %exp(align), %imm", f, b);
+	    BSF.set_decoder(opbit=0x05);
+
+		BTFSC.set_asm("btfsc %imm, %imm", f, b);
+        BTFSC.set_asm("btfsc %exp(align), %imm", f, b);
+	    BTFSC.set_decoder(opbit=0x06);
+	
+        BTFSS.set_asm("btfss %imm, %imm", f, b);
+        BTFSS.set_asm("btfss %exp(align), %imm", f, b);
+	    BTFSS.set_decoder(opbit=0x07);
+
+	    //----------------------------------------------------------------------------------------------------
+	    //Literal Operations----------------------------------------------------------------------------------
+
+        ADDLW.set_asm("addlw %imm", k);
+        ADDLW.set_asm("addlw %exp(align)", k);
+	    ADDLW.set_decoder(oplit=0x3E);
+	
+        ANDLW.set_asm("andlw %imm", k);
+        ANDLW.set_asm("andlw %exp(align)", k);
+	    ANDLW.set_decoder(oplit=0x39);
+	
+	    //colocada no formato Byte
+        CLRWDT.set_asm("clrwdt");
+	    CLRWDT.set_decoder(opbyte=0x00, d=0, f=0x64);
+	
+        IORLW.set_asm("iorlw %imm", k);
+        IORLW.set_asm("iorlw %exp(align)", k);
+	    IORLW.set_decoder(oplit=0x38);
+	
+        MOVLW.set_asm("movlw %imm", k);
+        MOVLW.set_asm("movlw %exp(align)", k);
+        MOVLW.set_asm("movlw high %exp(high)", k);
+	    MOVLW.set_decoder(oplit=0x30);
+	
+        SUBLW.set_asm("sublw %imm", k);
+        SUBLW.set_asm("sublw %exp(align)", k);
+	    SUBLW.set_decoder(oplit=0x3C);
+	
+        XORLW.set_asm("xorlw %imm", k);
+        XORLW.set_asm("xorlw %exp(align)", k);
+	    XORLW.set_decoder(oplit=0x3A);
+	
+        RETLW.set_asm("retlw %imm", k);
+        RETLW.set_asm("retlw %exp(align)", k);
+	    RETLW.set_decoder(oplit=0x34);
+
+	    //--------------------------------------------------------------------------------------------
+	    //Control Operations--------------------------------------------------------------------------
+
+        CALL.set_asm("call %addr(align)", kaddress);
+	    CALL.set_decoder(opctrl=0x04);
+	
+        GOTO.set_asm("goto %addr(align)", kaddress);
+	    GOTO.set_decoder(opctrl=0x05);
+	
+	    RETFIE.set_asm("retfie");
+	    RETFIE.set_decoder(opbyte=0x0, d=0, f=0x09);
+	
+	    RETURN.set_asm("return");
+	    RETURN.set_decoder(opbyte=0x00, d=0, f=0x08);
+	
+	    SLEEP.set_asm("sleep");
+	    SLEEP.set_decoder(opbyte=0x0, d=0, f=0x63);
+	    
+        //-------------------------------------------------------------------------------------------
+    };
+};

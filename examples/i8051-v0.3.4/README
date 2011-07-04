@@ -1,0 +1,54 @@
+This is the Intel 8051 ArchC functional model.
+
+To use acsim, the interpreted simulator:
+
+    acsim i8051.ac                      (create the simulator)
+    make -f Makefile.archc              (compile)
+    i8051.x --load=<file-path>          (run an application)
+
+To use accsim, the compiled simulator:
+
+    accsim i8051.ac <file-path>         (create specialized simulator)
+    make -f Makefile.archc              (compile)
+    i8051.x                             (run the application)
+
+There are two formats recognized for application <file-path>:
+- ELF binary matching ArchC specifications
+- hexadecimal text file for ArchC
+
+For more information visit http://www.archc.org
+
+
+CHANGELOG:
+==========
+
+Version 0.3.4:
+
+. Added binary utilities information to the ISA description
+. Version 2.0 compliant
+
+
+Version 0.3.3-archc2.0beta3:
+
+- Model now uses ac_helper
+- Multiple instantiation is working normally
+- Added optional debug code
+- Model is now big endian (some formats fields were inverted)
+- Added license headers
+
+
+Version 0.3.2:
+
+- Update instruction formats to follow new ArchC 1.3 little-endian
+  convention (see ArchC Manual chapter 3)
+- Registers are initialized at the begin behavior
+
+
+Version 0.3.1:
+
+- Update for compatibility with ArchC 1.0.0
+
+
+Version 0.3.0:
+
+- First release

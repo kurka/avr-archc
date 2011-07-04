@@ -12,20 +12,19 @@ struct flags_t {
 } flags;
   
 void ac_behavior (Type_RegDir_Rr_Rd) {}
+void ac_behavior (Type_A_Rr) {}
 void ac_behavior (Type_RegDir_Rd) {}
 void ac_behavior (Type_RegDir_Rd_Imm) {}
 void ac_behavior (Type_Branches) {}
 void ac_behavior (Type_Relative_Program_Addressing) {}
 
 void ac_behavior(instruction) {
+  
+  dbg_printf("----- size: %d ---  %lX ----- PC=%#x NPC=%#x ----- %lld\n", get_size(), 
+	     DM.read(ac_pc), (int) ac_pc, (int)npc, ac_instr_counter);
+
   ac_pc = npc;
   npc = npc + 2;
-
-  //  dbg_printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
-  dbg_printf("----- size: %d ---  %d ----- PC=%#x NPC=%#x ----- %lld\n", get_size(), DM.read(ac_instr_counter), (int) ac_pc, (int)npc, ac_instr_counter);
-
-  // ac_pc = 0x54;
-  // npc = 0x54;
 }
 
 void ac_behavior(begin) {
@@ -42,7 +41,6 @@ void ac_behavior(begin) {
   flags.C = false;
   
   RB[0] = 0;
-  // ac_pc = 0x54;
   npc = ac_pc + 2;
   
   for (int regNum = 0; regNum < 32; regNum++) {
@@ -362,24 +360,20 @@ void ac_behavior(rol) {
 
 void ac_behavior(rjmp) {
   
-  // int k1 = (k_7 & 0xF00) >> 8;
-  // int k2 = (k_7 & 0x0FF) << 4;
+  int j = k_7 << 1;
 
-  // int j = (k1 + k2) << 1;
-  int j = k_7;
+  dbg_printf("rjmp %#x\n", k_7);
+  dbg_printf("op: %#x\n", op_7);
 
-  dbg_printf("rjmp %x\n", j);
-  dbg_printf("op: %x\n", op_7);
+  // if ( (j & (1<<11) ) == (1<<11) ) {
+  //   j = ( (~j) + 1) & 0xFFF;
+  //   j = -j;
+  // }
 
-  if ( (j & (1<<11) ) == (1<<11) ) {
-    j = ( (~j) + 1) & 0xFFF;
-    j = -j;
-  }
-
-  ac_pc = ac_pc + j;
+  ac_pc = npc + j - 2;
   npc = ac_pc + 2;
 
-  dbg_printf("Result = %#x %d\n", (int)ac_pc, j);
+  dbg_printf("New ac_pc = %#x --- NPC = %#x\n", (int)ac_pc, (int)npc);
 }
 
 void ac_behavior(breq) {
@@ -467,26 +461,45 @@ void ac_behavior(andi) {
 
 void ac_behavior(ldi) {
   unsigned k = (k1 << 4) + (k2 & 0xF);
-  dbg_printf("ldi r%d, %d\n", rd_3, k);
+  int reg = rd_3 + 16;
+  dbg_printf("ldi r%d, %#x\n", reg, k);
   
-  RB[rd_3] = k;
+  RB[reg] = k;
 
-  dbg_printf("Result = %#x\n", RB[rd_3]);
+  dbg_printf("Result = %#x\n", RB[reg]);
 }
 
-// void ac_behavior(andi) {
-//   unsigned k = (k1 << 4) + (k2 & 0xF);
-//   dbg_printf("andi r%d, %d\n", rd_3, k);
+void ac_behavior(cpi) {
+  unsigned k = (k1 << 4) + (k2 & 0xF);
+  rd_3 = rd_3 + 16;
+  dbg_printf("cpi r%d, %#x\n", rd_3, k);
+  dbg_printf("r%d:%#x, k=%#x\n", rd_3, RB[rd_3], k);
+
+  int r = RB[rd_3] - k;
+
+  bool rd3 = RB[rd_3] & (1 << 3) == (1 << 3) ? true : false;
+  bool k3 = k & (1 << 3) == (1 << 3) ? true : false;
+  bool r3 = r & (1 << 3) == (1 << 3) ? true : false;
+  bool rd7 = RB[rd_3] & (1 << 7) == (1 << 7) ? true : false;
+  bool k7 = k & (1 << 7) == (1 << 7) ? true : false;
+  bool r7 = r & (1 << 7) == (1 << 7) ? true : false;
+
+  flags.H = ~rd3 & k3 | k3 & r3 | r3 & ~rd3;
+  flags.S = flags.N ^ flags.V;
+  flags.V = rd7 & ~k7 & ~r7 | ~rd7 & k7 & r7;
+  flags.N = r7;
+  flags.Z = r == 0 ? true : false;
+  flags.C = false;
+  if (std::abs(k) > std::abs(RB[rd_3]))
+    flags.C = true;
+
+  dbg_printf("Result = %d\n", (int)flags.C);
+}
+
+void ac_behavior(out) {
+  unsigned a = (a1 << 4) + (a2 & 0xF);
+  dbg_printf("out $%#x, %d\n", a, rd_9);
   
-//   int r = RB[rd_3] & k;
-//   RB[rd_3] =  RB[rd_3] & k;
+  dbg_printf("Result = %#x\n", a);
+}
 
-//   bool r7 = r & (1 << 7) == (1 << 7) ? true : false;
-
-//   flags.S = flags.N ^ flags.V;
-//   flags.V = false;
-//   flags.N = r7;
-//   flags.Z = r == 0 ? true : false;
-
-//   dbg_printf("Result = %#x\n", RB[rd_3]);
-// }

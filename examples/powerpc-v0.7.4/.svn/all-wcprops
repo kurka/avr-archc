@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/archc-prj/!svn/ver/757/models/powerpc/trunk
+END
+modifiers
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/archc-prj/!svn/ver/458/models/powerpc/trunk/modifiers
+END
+powerpc.ac
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/archc-prj/!svn/ver/328/models/powerpc/trunk/powerpc.ac
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/archc-prj/!svn/ver/327/models/powerpc/trunk/COPYING
+END
+defines_gdb
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/archc-prj/!svn/ver/458/models/powerpc/trunk/defines_gdb
+END
+powerpc_gdb_funcs.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/archc-prj/!svn/ver/720/models/powerpc/trunk/powerpc_gdb_funcs.cpp
+END
+powerpc_syscall.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/archc-prj/!svn/ver/747/models/powerpc/trunk/powerpc_syscall.cpp
+END
+powerpc_isa.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/archc-prj/!svn/ver/757/models/powerpc/trunk/powerpc_isa.cpp
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/archc-prj/!svn/ver/763/models/powerpc/trunk/README
+END
+powerpc_isa.ac
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/archc-prj/!svn/ver/757/models/powerpc/trunk/powerpc_isa.ac
+END
