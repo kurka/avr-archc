@@ -38,7 +38,8 @@ AC_ISA(avr1){
   ac_format Type_Relative_Program_Addressing  = "%k_7:12 op_7:4";
   /* ac_format Type_Relative_Program_Addressing  = "%k_7:12 %op_7:4"; */
  
-  ac_format Type_Branches  = "%op_8:6 %k_8:7 %f:3";
+  //ac_format Type_Branches  = "%op_8:6 %k_8:7 %f:3";
+  ac_format Type_Branches  = "%f:3 %k_8:7 %op_8:6";
   
   ac_format Type_A_Rr  = "%a2:4 %rd_9:5 %a1:2 %op_9:5";
   

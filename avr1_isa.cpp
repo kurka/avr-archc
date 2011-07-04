@@ -360,15 +360,16 @@ void ac_behavior(rol) {
 
 void ac_behavior(rjmp) {
   
-  int j = k_7 << 1;
+  int j = k_7;
 
-  dbg_printf("rjmp %#x\n", k_7);
+  dbg_printf("rjmp %#x\n", k_7 << 1);
   dbg_printf("op: %#x\n", op_7);
 
-  // if ( (j & (1<<11) ) == (1<<11) ) {
-  //   j = ( (~j) + 1) & 0xFFF;
-  //   j = -j;
-  // }
+  if ( (j & (1<<11) ) == (1<<11) ) {
+    j = ( (~j) + 1) & 0xFFF;
+    j = -j;
+  }
+  j *= 2;
 
   ac_pc = npc + j - 2;
   npc = ac_pc + 2;
@@ -432,14 +433,23 @@ void ac_behavior(brsh) {
 }
 
 void ac_behavior(brne) {
-  dbg_printf("brne %d\n", k_8);
-  
+  dbg_printf("brne %#x\n", k_8);
+  int j = k_8;
+
+  if ( (j & (1<<6) ) == (1<<6) ) {
+    j = ( (~j) + 1) & 0x7F;
+    j = -j;
+  }
+  j *= 2;
+
+  dbg_printf("offset: %d\n", j);
+
   if (!flags.Z) {
-    ac_pc = npc;
-    npc = ac_pc + k_8;
+    ac_pc = npc + j - 2;
+    npc = ac_pc + 2;
   }
 
-  dbg_printf("Result = %#x\n", k_8);
+  dbg_printf("New ac_pc = %#x --- NPC = %#x\n", (int)ac_pc, (int)npc);
 }
 
 void ac_behavior(andi) {
