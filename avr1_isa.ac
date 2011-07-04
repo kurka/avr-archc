@@ -3,9 +3,10 @@ AC_ISA(avr1){
 
   ac_format Type_RegDir_Rd  = "%op_1:6 %rd_1:10";
 
-  ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
+   ac_format Type_RegDir_Rr_Rd  = "%op_2:6 %r1:1 %rd_2:5 %r2:4";
+  /* ac_format Type_RegDir_Rr_Rd  = "%r2:4 %rd_2:5 %r1:1 %op_2:6"; */
   
-  /* ac_format Type_RegDir_Rr_Rd  = "%op_3:4 %k1:4 %rd_3:4 %k2:4"; */
+  ac_format Type_RegDir_Rd_Imm  = "%op_3:4 %k1:4 %rd_3:4 %k2:4";
 
   /* ac_format Type_IO_Direct  = "%op_3:5 [%rd_3:5 | %rr:5] %addr:6"; */
 
@@ -32,7 +33,9 @@ AC_ISA(avr1){
   /* ac_format Type_Indirect_Program_Addressing  = "%z:16"; */
   
   //Relative Program Addressing, RJMP and RCALL (PC <= PC+1+k), k vai de -2048 a +2047
+
   ac_format Type_Relative_Program_Addressing  = "%op_7:4 %k_7:12";
+  /* ac_format Type_Relative_Program_Addressing  = "%k_7:12 %op_7:4"; */
  
   ac_format Type_Branches  = "%op_8:6 %k_8:7 %f:3";
   
@@ -45,7 +48,8 @@ AC_ISA(avr1){
 
   ac_instr<Type_RegDir_Rd> rol, lsl, tst, clr;
   
-  /* ac_instr<Type_RegDir_Rd> andi, cbr, cpi, ldi, ori, sbr, sbci, subi; */
+  ac_instr<Type_RegDir_Rd_Imm> andi, ldi;
+    //, ori, sbr, sbci, subi;
 
   ac_instr<Type_Relative_Program_Addressing> rjmp;
 
@@ -112,7 +116,7 @@ AC_ISA(avr1){
     logical_and.set_decoder(op_2=0x8);
     
     // compare
-    cp.set_asm("cpc %reg, %reg", r1+r2, rd_2);
+    cp.set_asm("cp %reg, %reg", r1+r2, rd_2);
     cp.set_decoder(op_2=0x5);
 
     // compare with carry
@@ -147,39 +151,39 @@ AC_ISA(avr1){
     sub.set_asm("sub %reg, %reg", r1+r2, rd_2);
     sub.set_decoder(op_2=0x6);
     
-    /* 	//andi  */
-    /* andi.set_asm("andi %reg, %imm", rd_3, k1+k2); */
-    /* andi.set_decoder(op_3=0x7); */
+    	//andi
+    andi.set_asm("andi %reg, %imm", rd_3, k1+k2);
+    andi.set_decoder(op_3=0x7);
     
-    /* //cbr  */
+    /* //cbr */
     /* cbr.set_asm("cbr %reg, %imm", rd_3, k1+k2); */
     /* cbr.set_decoder(op_3=0x7); */
     
-    /* //cpi  */
+    //cpi
     /* cpi.set_asm("cpi %reg, %imm", rd_3, k1+k2); */
     /* cpi.set_decoder(op_3=0x3); */
     
-    /* //ldi  */
-    /* ldi.set_asm("ldi %reg, %imm", rd_3, k1+k2); */
-    /* ldi.set_decoder(op_3=0xE); */
+    //ldi
+    ldi.set_asm("ldi %reg, %imm", rd_3, k1+k2);
+    ldi.set_decoder(op_3=0xE);
     
-    /* //ori  */
+    /* //ori */
     /* ori.set_asm("ori %reg, %imm", rd_3, k1+k2); */
     /* ori.set_decoder(op_3=0x6); */
     
-    /* //sbr  */
+    /* //sbr */
     /* sbr.set_asm("sbr %reg, %imm", rd_3, k1+k2); */
     /* sbr.set_decoder(op_3=0x6); */
     
-    /* //sbci  */
+    /* //sbci */
     /* sbci.set_asm("sbci %reg, %imm", rd_3, k1+k2); */
     /* sbci.set_decoder(op_3=0x4); */
     
-    /* //subi  */
+    /* //subi */
     /* subi.set_asm("subi %reg, %imm", rd_3, k1+k2); */
     /* subi.set_decoder(op_3=0x5); */
 
-    // sub- subtract without carry
+    //relative jump
     rjmp.set_asm("rjmp %imm", k_7);
     rjmp.set_decoder(op_7=0xC);
 
