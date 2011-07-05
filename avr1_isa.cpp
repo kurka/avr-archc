@@ -9,14 +9,18 @@
 using namespace avr1_parms;
 
 //variavel global para pilha
-stack<int> mystack;
+std::stack<int> mystack;
+
+unsigned int Y[1 << 14];
 
 struct flags_t {
   bool I, T, H, S, V, N, Z, C;
 } flags;
   
 void ac_behavior (Type_RegDir_Rr_Rd) {}
+void ac_behavior (Type_STDYmaisQ) {}
 void ac_behavior (Type_A_Rr) {}
+void ac_behavior (Type_SBIW) {}
 void ac_behavior (Type_RegDir_Rd) {}
 void ac_behavior (Type_RegDir_Rd_Imm) {}
 void ac_behavior (Type_Branches) {}
@@ -52,16 +56,16 @@ void ac_behavior(begin) {
   }
 }
 
+void ac_behavior(end) {
 
+}
 
 void ac_behavior(add) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
 
 
   dbg_printf("add r%d, r%d\n", rd_2, rr);
-  dbg_printf("r1:%d, r2:%d\n", r1, r2);
   dbg_printf("rd:%d\n", rd_2);
-  dbg_printf("op:%d\n", op_2);
 
   int r = RB[rd_2] + RB[rr];
 
@@ -362,6 +366,10 @@ void ac_behavior(rol) {
 
 void ac_behavior(rjmp) {
   
+  if (k_7 == 0xFFF) {
+    stop();
+  }
+
   int j = k_7;
 
   dbg_printf("rjmp %#x\n", k_7 << 1);
@@ -375,6 +383,8 @@ void ac_behavior(rjmp) {
 
   ac_pc = npc + j - 2;
   npc = ac_pc + 2;
+
+  //  dbg_printf("Proxima instrução: %lX\n", DM.read(ac_pc));
 
   dbg_printf("New ac_pc = %#x --- NPC = %#x\n", (int)ac_pc, (int)npc);
 }
@@ -392,8 +402,8 @@ void ac_behavior(rcall) {
   }
   j *= 2;
 
-	//guarda o endereco de retorno
-	mystack.push(pc);
+  //guarda o endereco de retorno
+   mystack.push(ac_pc);
   ac_pc = npc + j - 2;
   npc = ac_pc + 2;
 
@@ -541,3 +551,42 @@ void ac_behavior(out) {
   dbg_printf("Result = %#x\n", a);
 }
 
+void ac_behavior(std) {
+  unsigned q = (q1 << 5) + (q2 << 3) + (q3 & 0x7);
+  dbg_printf("std Y+%#x, r%d\n", q, r);
+  
+  Y[q] = RB[r];
+
+  dbg_printf("Result = %#x\n", Y[q]);
+}
+
+void ac_behavior(ldd) {
+  unsigned q = (q1 << 5) + (q2 << 3) + (q3 & 0x7);
+  dbg_printf("ldd r%d, Y+%#x\n", r, q);
+  
+  RB[r] = Y[q];
+
+  dbg_printf("Result = %#x\n", RB[r]);
+}
+
+void ac_behavior(sbiw) {
+  unsigned k = (m1 << 4) + (m2 & 0xF);
+
+  unsigned int rd = d*3 + 24;
+  dbg_printf("sbiw r%d, %#x\n", rd, k);
+
+  int r = RB[rd] - k;
+
+  RB[rd] = RB[rd] - k;
+
+  bool r15 = r & (1 << 15) == (1 << 15) ? true : false;
+
+  flags.S = flags.N ^ flags.V;
+  flags.V = false;
+  flags.N = r15;
+  flags.Z = r == 0 ? true : false;
+  if (std::abs(k) > std::abs(RB[rd] + k))
+    flags.C = true;
+
+  dbg_printf("Result = %#x\n", RB[rd]);
+}
