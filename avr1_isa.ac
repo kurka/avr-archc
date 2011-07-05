@@ -54,7 +54,7 @@ AC_ISA(avr1){
   ac_instr<Type_RegDir_Rd_Imm> andi, ldi, cpi;
     //, ori, sbr, sbci, subi;
 
-  ac_instr<Type_Relative_Program_Addressing> rjmp;
+  ac_instr<Type_Relative_Program_Addressing> rjmp,rcall;
 
   ac_instr<Type_Branches> breq, brne, brge, brsh, brlo, brlt;
 
@@ -195,6 +195,10 @@ AC_ISA(avr1){
     //relative jump
     rjmp.set_asm("rjmp %imm", k_7);
     rjmp.set_decoder(op_7=0xC);
+
+	 	//relative call
+    rcall.set_asm("rcall %imm", k_7);
+    rcall.set_decoder(op_7=0xD);
 
 
   };

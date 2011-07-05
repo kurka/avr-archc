@@ -4,8 +4,12 @@
 
 #define DEBUG_MODEL
 #include "ac_debug_model.H"
+#include <stack>
 
 using namespace avr1_parms;
+
+//variavel global para pilha
+stack<int> mystack;
 
 struct flags_t {
   bool I, T, H, S, V, N, Z, C;
@@ -42,15 +46,13 @@ void ac_behavior(begin) {
   
   RB[0] = 0;
   npc = ac_pc + 2;
-  
+
   for (int regNum = 0; regNum < 32; regNum++) {
     RB[regNum] = 0;
   }
 }
 
-void ac_behavior(end) {
-  
-}
+
 
 void ac_behavior(add) {
   unsigned rr = (r1 << 4) + (r2 & 0xF);
@@ -376,6 +378,32 @@ void ac_behavior(rjmp) {
 
   dbg_printf("New ac_pc = %#x --- NPC = %#x\n", (int)ac_pc, (int)npc);
 }
+
+void ac_behavior(rcall) {
+  
+  int j = k_7;
+
+  dbg_printf("rcall %#x\n", k_7 << 1);
+  dbg_printf("op: %#x\n", op_7);
+
+  if ( (j & (1<<11) ) == (1<<11) ) {
+    j = ( (~j) + 1) & 0xFFF;
+    j = -j;
+  }
+  j *= 2;
+
+	//guarda o endereco de retorno
+	mystack.push(pc);
+  ac_pc = npc + j - 2;
+  npc = ac_pc + 2;
+
+  dbg_printf("New ac_pc = %#x --- NPC = %#x\n", (int)ac_pc, (int)npc);
+
+
+	//end de retorno
+  dbg_printf("New stack top address = %#x \n", (int)mystack.top());
+}
+
 
 void ac_behavior(breq) {
   dbg_printf("breq %d\n", k_8);
